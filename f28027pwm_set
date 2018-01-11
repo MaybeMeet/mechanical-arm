@@ -1,0 +1,30 @@
+//###########################################################################
+// $ 函数名称:  void InitPWM1(Uint16 prd)    $
+// $ 函数功能:  初始化EPwm1模块                           $
+//###########################################################################
+void InitPWM1(Uint16 prd)
+{
+   InitEPwm1Gpio();   // 初始化EPwm1功能引脚
+   EPwm1Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;  // 向上计数
+   EPwm1Regs.TBPRD = prd;     // 设定周期寄存器值，占空比为 比较寄存器/prd
+   EPwm1Regs.TBCTL.bit.PHSEN = TB_DISABLE;    // 禁止装载相位寄存器的值
+   EPwm1Regs.TBPHS.half.TBPHS = 0x0000;       // 相位为 0
+   EPwm1Regs.TBCTR = 0x0000;                  // 时基计数清0
+   EPwm1Regs.TBCTL.bit.HSPCLKDIV =5;   // 对应 10分频,查表
+   EPwm1Regs.TBCTL.bit.CLKDIV =2;  //对应4分频，查表
+
+   EPwm1Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;   // 影子装载模式
+   EPwm1Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;   // 影子装载模式
+   EPwm1Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;   // 装载条件选择为在CTR=ZERO时候装载
+   EPwm1Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;   // 装载条件选择为在CTR=ZERO时候装载
+
+   EPwm1Regs.CMPA.half.CMPA = 0;    // 设定比较寄存器A的值
+   EPwm1Regs.CMPB =0;     // 设定比较寄存器B的值
+
+   EPwm1Regs.AQCTLA.bit.ZRO = AQ_SET ;    // 当时基计数值等于0的时候，EPwm1A输出高
+   EPwm1Regs.AQCTLA.bit.CAU = AQ_CLEAR ;  // 当时基计数值等于CMPA寄存器的值时，EPwm1A输出低
+
+   EPwm1Regs.AQCTLB.bit.ZRO =AQ_SET;    // 当时基计数值等于0的时候，EPwm1B输出低
+   EPwm1Regs.AQCTLB.bit.CBU =AQ_CLEAR;     // 当时基计数值等于CMPA寄存器的值时，EPwm1B输出高
+
+}
