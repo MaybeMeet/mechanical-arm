@@ -6,7 +6,11 @@ void InitPWM1(Uint16 prd)
 {
    InitEPwm1Gpio();   // 初始化EPwm1功能引脚
    EPwm1Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;  // 向上计数
-   EPwm1Regs.TBPRD = prd;     // 设定周期寄存器值，****占空比为 比较寄存器/prd***
+   EPwm1Regs.TBPRD = prd;     // 设定周期寄存器值，
+   
+   /****          占空比为 比较寄存器/prd               ***/
+   
+   
    EPwm1Regs.TBCTL.bit.PHSEN = TB_DISABLE;    // 禁止装载相位寄存器的值
    EPwm1Regs.TBPHS.half.TBPHS = 0x0000;       // 相位为 0
    EPwm1Regs.TBCTR = 0x0000;                  // 时基计数清0
