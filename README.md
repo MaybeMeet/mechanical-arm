@@ -10,10 +10,14 @@ F28027.cmd
 
 当烧录到flash中时需要
 
-extern Uint16 RamfuncsLoadStart;
+extern Uint16 RamfuncsLoadStart; 
+
 extern Uint16 RamfuncsLoadEnd;
+
 extern Uint16 RamfuncsRunStart;
+
 extern Uint16 RamfuncsLoadSize;
+
 
  memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (size_t)&RamfuncsLoadSize);
        InitFlash();
