@@ -1,1 +1,24 @@
+/******************手柄相关程序*************************/
 
+
+//处理手柄
+void handle_ps2(void) {
+	static u32 systick_ms_bak = 0;
+	//每20ms处理1次
+	if(systick_ms - systick_ms_bak < 20) {
+		return;
+	}
+	systick_ms_bak = systick_ms;
+	//读写手柄数据
+	psx_write_read(psx_buf);
+	
+#if 0
+		//测试手柄数据，1为打开，0为关闭
+	sprintf((char *)cmd_return, "0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\r\n", 
+	(int)psx_buf[0], (int)psx_buf[1], (int)psx_buf[2], (int)psx_buf[3],
+	(int)psx_buf[4], (int)psx_buf[5], (int)psx_buf[6], (int)psx_buf[7], (int)psx_buf[8]);
+	uart1_send_str(cmd_return);
+#endif 	
+	
+	return;
+}
