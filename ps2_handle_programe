@@ -1,7 +1,18 @@
-/******************手柄相关程序*************************/
+/******************手柄相关程序（stm）*************************/
 
 
-//处理手柄
+//&&&&&&&&&&&&&&&&&&&&&&&&& 手柄初始化（GPIO） &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+void PSX_init(void) {
+	psx_io_config();
+	PS2_ATT(1);
+	PS2_CMD(1);
+	PS2_CLK(1);
+	//PS2_DAT = 0;
+	//PS2_ACK = 1;
+}
+
+//&&&&&&&&&&&&&&&&&&&&&&&&& 处理手柄 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
 void handle_ps2(void) {
 	static u32 systick_ms_bak = 0;
 	//每20ms处理1次
@@ -10,7 +21,7 @@ void handle_ps2(void) {
 	}
 	systick_ms_bak = systick_ms;
 	//读写手柄数据
-	psx_write_read(psx_buf);
+	psx_write_read(psx_buf);    //&&&
 	
 #if 0
 		//测试手柄数据，1为打开，0为关闭
@@ -22,3 +33,38 @@ void handle_ps2(void) {
 	
 	return;
 }
+
+//&&&&&&&&&&&&&&&&&&&&&&&&& 读取手柄数据 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+void psx_write_read(unsigned char *get_buf) {
+	PS2_ATT(0);
+	get_buf[0] = psx_transfer(START_CMD);
+	get_buf[1] = psx_transfer(ASK_DAT_CMD);
+	get_buf[2] = psx_transfer(get_buf[0]);
+	get_buf[3] = psx_transfer(get_buf[0]);
+	get_buf[4] = psx_transfer(get_buf[0]);
+	get_buf[5] = psx_transfer(get_buf[0]);
+	get_buf[6] = psx_transfer(get_buf[0]);
+	get_buf[7] = psx_transfer(get_buf[0]);
+	get_buf[8] = psx_transfer(get_buf[0]);	
+	PS2_ATT(1);
+	
+	return;
+}
+
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$ 处理手柄按键 $$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+void handle_button(void) {
+	static unsigned char psx_button_bak[2] = {0};
+	//对比两次获取的按键值是否相同 ，相同就不处理，不相同则处理
+	if((psx_button_bak[0] == psx_buf[3])
+	&& (psx_button_bak[1] == psx_buf[4])) {				
+	} else {
+		//处理buf3和buf4两个字节，这两个字节存储这手柄16个按键的状态
+		parse_psx_buf(psx_buf+3, psx_buf[1]);
+		psx_button_bak[0] = psx_buf[3];
+		psx_button_bak[1] = psx_buf[4];
+	}
+	return;
+}
+
+
